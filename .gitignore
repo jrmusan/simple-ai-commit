@@ -1,0 +1,15 @@
+# Dependency directories
+node_modules/
+
+# macOS
+.DS_Store
+
+# Editor / IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Personal config (never commit your API key)
+.env
+*.env
