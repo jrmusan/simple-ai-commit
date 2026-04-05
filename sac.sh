@@ -163,9 +163,11 @@ main() {
   printf '%s\n' "$commit_msg"
   printf '%.0s─' {1..50}; printf '\n\n'
 
-  local answer
+  local answer answer_lower
   read -r -p "Use this message? [Y/n/e(dit)] " answer
-  case "${answer,,}" in
+  # Lowercase without ${var,,} (requires bash 4+; macOS ships bash 3.2).
+  answer_lower=$(printf '%s' "$answer" | tr '[:upper:]' '[:lower:]')
+  case "$answer_lower" in
     ""|y|yes)
       git commit -m "$commit_msg"
       printf '✅  Committed!\n'
