@@ -1,0 +1,21 @@
+# simple-ai-commit configuration
+# Location: ~/.config/simple-ai-commit/config
+#
+# Copy this file to the location above and fill in your API key.
+# Lines starting with '#' are comments.
+
+# ── Required ───────────────────────────────────────────────────────────────────
+
+# Your OpenRouter API key — get one at https://openrouter.ai
+OPENROUTER_API_KEY="your-openrouter-api-key-here"
+
+# ── Optional ───────────────────────────────────────────────────────────────────
+
+# Model to use (see https://openrouter.ai/models for the full list)
+MODEL="openai/gpt-4o-mini"
+
+# Default commit message style: concise | funny | detailed
+#   concise   – one-line, ≤50 chars, imperative mood
+#   funny     – humorous message that still describes the change
+#   detailed  – subject line + blank line + bullet-point body
+STYLE="concise"
