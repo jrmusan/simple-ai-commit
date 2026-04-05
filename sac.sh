@@ -3,7 +3,7 @@
 # Generates a git commit message from staged changes using OpenRouter.
 #
 # Usage:
-#   sac [--style concise|funny|detailed] [--model MODEL]
+#   sac [--funny|--detailed] [--model MODEL]   (default: one-line message)
 #
 # Config file: ~/.config/simple-ai-commit/config
 
@@ -52,10 +52,10 @@ load_config() {
 
 get_style_prompt() {
   case "$STYLE" in
-    concise)  printf '%s' "$PROMPT_CONCISE"  ;;
+    concise|"") printf '%s' "$PROMPT_CONCISE" ;;
     funny)    printf '%s' "$PROMPT_FUNNY"    ;;
     detailed) printf '%s' "$PROMPT_DETAILED" ;;
-    *) die "Unknown style '$STYLE'. Valid styles: concise, funny, detailed" ;;
+    *) die "Unknown style '$STYLE'. Use --funny, --detailed, or the default (omit STYLE)." ;;
   esac
 }
 
@@ -93,27 +93,24 @@ Usage:
   sac [OPTIONS]
 
 Options:
-  -s, --style STYLE   Message style: concise | funny | detailed  (default: concise)
+  By default, messages are a single line (≤50 chars, imperative mood).
+  --funny             Humorous message that still describes the change
+  --detailed          Subject line + blank line + bullet-point body
   -m, --model MODEL   OpenRouter model slug                       (default: openai/gpt-4o-mini)
   -h, --help          Show this help and exit
-
-Styles:
-  concise   One-line message, ≤50 chars, imperative mood
-  funny     Humorous message that still describes the change
-  detailed  Subject line + blank line + bullet-point body
 
 Configuration file: $CONFIG_FILE
   OPENROUTER_API_KEY="sk-or-..."   # required
   MODEL="openai/gpt-4o-mini"       # optional
-  STYLE="concise"                  # optional
+  STYLE="funny" or STYLE="detailed"   # optional; omit for default one-line messages
 
 Environment variables (override config file):
-  OPENROUTER_API_KEY, SAC_MODEL, SAC_STYLE
+  OPENROUTER_API_KEY, SAC_MODEL, SAC_STYLE  (SAC_STYLE: funny or detailed)
 
 Bash alias example (~/.bashrc or ~/.zshrc):
   alias aic='sac'
-  alias aic-funny='sac --style funny'
-  alias aic-detail='sac --style detailed'
+  alias aic-funny='sac --funny'
+  alias aic-detail='sac --detailed'
 EOF
 }
 
@@ -125,12 +122,15 @@ main() {
   # Parse CLI flags (override config)
   while [[ $# -gt 0 ]]; do
     case "$1" in
-      -s|--style)  STYLE="${2:?'--style requires a value'}";  shift 2 ;;
+      --funny)     STYLE=funny;     shift ;;
+      --detailed)  STYLE=detailed;  shift ;;
       -m|--model)  MODEL="${2:?'--model requires a value'}";  shift 2 ;;
       -h|--help)   usage; exit 0 ;;
       *) die "Unknown argument: $1. Run 'sac --help' for usage." ;;
     esac
   done
+
+  [[ -z "$STYLE" ]] && STYLE=concise
 
   # Validate
   if [[ -z "$OPENROUTER_API_KEY" ]]; then
@@ -146,7 +146,11 @@ main() {
   local style_prompt
   style_prompt=$(get_style_prompt)
 
-  printf '🤖  Generating %s commit message via %s...\n' "$STYLE" "$MODEL"
+  if [[ "$STYLE" == "concise" ]]; then
+    printf '🤖  Generating commit message via %s...\n' "$MODEL"
+  else
+    printf '🤖  Generating %s commit message via %s...\n' "$STYLE" "$MODEL"
+  fi
 
   local response commit_msg
   response=$(call_openrouter "$style_prompt" "$diff")
@@ -163,9 +167,11 @@ main() {
   printf '%s\n' "$commit_msg"
   printf '%.0s─' {1..50}; printf '\n\n'
 
-  local answer
-  read -r -p "Use this message? [Y/n/e(dit)] " answer
-  case "${answer,,}" in
+  local answer answer_lower
+  read -r -p "Use this message? [y/n/e(dit)] " answer
+  # Lowercase without ${var,,} (requires bash 4+; macOS ships bash 3.2).
+  answer_lower=$(printf '%s' "$answer" | tr '[:upper:]' '[:lower:]')
+  case "$answer_lower" in
     ""|y|yes)
       git commit -m "$commit_msg"
       printf '✅  Committed!\n'

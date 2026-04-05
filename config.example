@@ -14,8 +14,7 @@ OPENROUTER_API_KEY="your-openrouter-api-key-here"
 # Model to use (see https://openrouter.ai/models for the full list)
 MODEL="openai/gpt-4o-mini"
 
-# Default commit message style: concise | funny | detailed
-#   concise   – one-line, ≤50 chars, imperative mood
-#   funny     – humorous message that still describes the change
-#   detailed  – subject line + blank line + bullet-point body
-STYLE="concise"
+# By default, commit messages are one line (≤50 chars, imperative mood).
+# Optional: set to funny or detailed for a different default (overridable with sac --funny / --detailed).
+# STYLE="funny"
+# STYLE="detailed"

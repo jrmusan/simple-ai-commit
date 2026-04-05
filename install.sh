@@ -40,9 +40,9 @@ cat <<'EOF'
 ─────────────────────────────────────────────────
  Suggested aliases for ~/.bashrc or ~/.zshrc
 ─────────────────────────────────────────────────
-  alias aic='sac'                        # default style
-  alias aic-funny='sac --style funny'    # funny style
-  alias aic-detail='sac --style detailed' # detailed style
+  alias aic='sac'                         # default style
+  alias aic-funny='sac --funny'           # funny style
+  alias aic-detail='sac --detailed'       # detailed style
 ─────────────────────────────────────────────────
 
 Run 'sac --help' to get started.
