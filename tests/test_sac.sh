@@ -58,7 +58,7 @@ ok "sac.sh exists" test -f "$SAC"
 
 # 2. --help flag prints usage and exits 0
 ok "--help exits 0" bash "$SAC" --help
-expect_output "--help mentions styles" "concise" bash "$SAC" --help
+expect_output "--help mentions default one-line" "single line" bash "$SAC" --help
 expect_output "--help mentions funny"  "funny"   bash "$SAC" --help
 expect_output "--help mentions config" "OPENROUTER_API_KEY" bash "$SAC" --help
 
@@ -101,7 +101,6 @@ expect_output "no staged changes → error message" "staged" \
   '
 
 # 6. Style options appear in --help
-expect_output "--help mentions --concise"  "--concise"  bash "$SAC" --help
 expect_output "--help mentions --funny"    "--funny"    bash "$SAC" --help
 expect_output "--help mentions --detailed" "--detailed" bash "$SAC" --help
 
@@ -111,7 +110,7 @@ expect_output "config.example has OPENROUTER_API_KEY" "OPENROUTER_API_KEY" \
   cat "$SCRIPT_DIR/../config.example"
 expect_output "config.example has MODEL"              "MODEL"              \
   cat "$SCRIPT_DIR/../config.example"
-expect_output "config.example has STYLE"              "STYLE"              \
+expect_output "config.example documents STYLE"         "# STYLE="          \
   cat "$SCRIPT_DIR/../config.example"
 
 # ── Summary ────────────────────────────────────────────────────────────────────
