@@ -34,16 +34,4 @@ if ! command -v sac &>/dev/null; then
   printf '      export PATH="%s:$PATH"\n\n' "$BIN_DIR"
 fi
 
-# ── Alias suggestions ──────────────────────────────────────────────────────────
-cat <<'EOF'
-
-─────────────────────────────────────────────────
- Suggested aliases for ~/.bashrc or ~/.zshrc
-─────────────────────────────────────────────────
-  alias aic='sac'                         # default style
-  alias aic-funny='sac --funny'           # funny style
-  alias aic-detail='sac --detailed'       # detailed style
-─────────────────────────────────────────────────
-
-Run 'sac --help' to get started.
-EOF
+printf '\nRun '\''sac --help'\'' to get started.\n'

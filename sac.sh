@@ -106,11 +106,6 @@ Configuration file: $CONFIG_FILE
 
 Environment variables (override config file):
   OPENROUTER_API_KEY, SAC_MODEL, SAC_STYLE  (SAC_STYLE: funny or detailed)
-
-Bash alias example (~/.bashrc or ~/.zshrc):
-  alias aic='sac'
-  alias aic-funny='sac --funny'
-  alias aic-detail='sac --detailed'
 EOF
 }
 

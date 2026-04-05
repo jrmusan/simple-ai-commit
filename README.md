@@ -8,7 +8,7 @@ By default, messages are a **single line** (≤ 50 characters, imperative mood).
 
 | | Description |
 |--|-------------|
-| *(default)* | Single line, ≤ 50 chars, imperative mood |
+| *(default)* | Single line, ≤ 50 chars |
 | `funny` / `sac --funny` | Humorous and witty, still describes the change |
 | `detailed` / `sac --detailed` | Subject line + blank line + bullet-point body |
 
@@ -93,20 +93,6 @@ Use this message? [Y/n/e(dit)]
 - Press **Enter** or type `y` to commit immediately.
 - Type `e` to open the message in `$EDITOR` before committing.
 - Type `n` to abort without committing.
-
----
-
-## Bash aliases
-
-Add to `~/.bashrc` or `~/.zshrc`:
-
-```bash
-alias aic='sac'                         # default one-line messages from config
-alias aic-funny='sac --funny'
-alias aic-detail='sac --detailed'
-```
-
-Then just run `aic` after staging your files.
 
 ---
 
