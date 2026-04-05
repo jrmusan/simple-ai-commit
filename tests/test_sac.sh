@@ -28,7 +28,7 @@ expect_output() {
   local name="$1" pattern="$2"; shift 2
   local out
   out=$("$@" 2>&1 || true)
-  if printf '%s' "$out" | grep -q "$pattern"; then
+  if printf '%s' "$out" | grep -q -e "$pattern"; then
     printf '✅  PASS: %s\n' "$name"
     PASS=$((PASS + 1))
   else
@@ -69,18 +69,22 @@ expect_exit "no API key → exit 1" 1 \
 expect_output "no API key → error message" "OPENROUTER_API_KEY" \
   env -u OPENROUTER_API_KEY XDG_CONFIG_HOME=/tmp/sac-no-cfg bash "$SAC"
 
-# 4. Unknown --style value exits with an error
-expect_output "bad --style → error message" "Unknown style" \
-  env OPENROUTER_API_KEY="test-key" bash -c '
-    # Create a fake git that pretends there is a staged diff
+# 4. Unknown CLI flag exits with an error
+expect_output "unknown flag → error message" "Unknown argument" \
+  bash "$SAC" --not-a-valid-flag 2>&1 || true
+
+# 4b. Invalid SAC_STYLE still surfaces as Unknown style (isolated config so ~/.config does not override)
+expect_output "invalid SAC_STYLE → error message" "Unknown style" \
+  env OPENROUTER_API_KEY="test-key" SAC_STYLE=bogus bash -c '
+    _xdg=$(mktemp -d)
     _tmpbin=$(mktemp -d)
     cat >"$_tmpbin/git" <<'"'"'GIT'"'"'
 #!/usr/bin/env bash
 if [[ "$1" == "diff" ]]; then echo "fake diff"; else command git "$@"; fi
 GIT
     chmod +x "$_tmpbin/git"
-    PATH="$_tmpbin:$PATH" bash '"$SAC"' --style bogus 2>&1 || true
-    rm -rf "$_tmpbin"
+    XDG_CONFIG_HOME="$_xdg" PATH="$_tmpbin:$PATH" bash '"$SAC"' 2>&1 || true
+    rm -rf "$_tmpbin" "$_xdg"
   '
 
 # 5. No staged changes → informative error
@@ -96,10 +100,10 @@ expect_output "no staged changes → error message" "staged" \
     rm -rf "$_tmpdir"
   '
 
-# 6. --style flag is accepted for each valid style (checked via help path, not API)
-for style in concise funny detailed; do
-  expect_output "--style $style in --help" "$style" bash "$SAC" --help
-done
+# 6. Style options appear in --help
+expect_output "--help mentions --concise"  "--concise"  bash "$SAC" --help
+expect_output "--help mentions --funny"    "--funny"    bash "$SAC" --help
+expect_output "--help mentions --detailed" "--detailed" bash "$SAC" --help
 
 # 7. config.example has all required keys
 ok "config.example exists" test -f "$SCRIPT_DIR/../config.example"

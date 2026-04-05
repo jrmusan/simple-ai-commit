@@ -3,7 +3,7 @@
 # Generates a git commit message from staged changes using OpenRouter.
 #
 # Usage:
-#   sac [--style concise|funny|detailed] [--model MODEL]
+#   sac [--concise|--funny|--detailed] [--model MODEL]
 #
 # Config file: ~/.config/simple-ai-commit/config
 
@@ -93,14 +93,11 @@ Usage:
   sac [OPTIONS]
 
 Options:
-  -s, --style STYLE   Message style: concise | funny | detailed  (default: concise)
+  --concise           One-line message, ≤50 chars, imperative mood (default if no style flag)
+  --funny             Humorous message that still describes the change
+  --detailed          Subject line + blank line + bullet-point body
   -m, --model MODEL   OpenRouter model slug                       (default: openai/gpt-4o-mini)
   -h, --help          Show this help and exit
-
-Styles:
-  concise   One-line message, ≤50 chars, imperative mood
-  funny     Humorous message that still describes the change
-  detailed  Subject line + blank line + bullet-point body
 
 Configuration file: $CONFIG_FILE
   OPENROUTER_API_KEY="sk-or-..."   # required
@@ -112,8 +109,8 @@ Environment variables (override config file):
 
 Bash alias example (~/.bashrc or ~/.zshrc):
   alias aic='sac'
-  alias aic-funny='sac --style funny'
-  alias aic-detail='sac --style detailed'
+  alias aic-funny='sac --funny'
+  alias aic-detail='sac --detailed'
 EOF
 }
 
@@ -125,7 +122,9 @@ main() {
   # Parse CLI flags (override config)
   while [[ $# -gt 0 ]]; do
     case "$1" in
-      -s|--style)  STYLE="${2:?'--style requires a value'}";  shift 2 ;;
+      --concise)   STYLE=concise;   shift ;;
+      --funny)     STYLE=funny;     shift ;;
+      --detailed)  STYLE=detailed;  shift ;;
       -m|--model)  MODEL="${2:?'--model requires a value'}";  shift 2 ;;
       -h|--help)   usage; exit 0 ;;
       *) die "Unknown argument: $1. Run 'sac --help' for usage." ;;

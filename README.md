@@ -4,7 +4,7 @@ A minimal bash tool that reads your staged Git changes, sends them to
 [OpenRouter](https://openrouter.ai), and returns a commit message you can
 use immediately — or edit before committing.
 
-Switch between three styles via a config file or a CLI flag:
+Switch between three styles via a config file or short CLI flags:
 
 | Style | Description |
 |---------|-------------|
@@ -67,14 +67,15 @@ git add .
 sac
 
 # Override the style on the fly
-sac --style funny
-sac --style detailed
+sac --funny
+sac --detailed
+sac --concise   # explicit concise (same as default when STYLE=concise in config)
 
 # Use a different model
 sac --model anthropic/claude-3-haiku
 
 # Combined
-sac --style detailed --model openai/gpt-4o
+sac --detailed --model openai/gpt-4o
 ```
 
 When `sac` runs you will see:
@@ -102,8 +103,8 @@ Add to `~/.bashrc` or `~/.zshrc`:
 
 ```bash
 alias aic='sac'                         # default style from config
-alias aic-funny='sac --style funny'
-alias aic-detail='sac --style detailed'
+alias aic-funny='sac --funny'
+alias aic-detail='sac --detailed'
 ```
 
 Then just run `aic` after staging your files.
